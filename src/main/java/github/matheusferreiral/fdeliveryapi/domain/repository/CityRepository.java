@@ -9,7 +9,7 @@ public interface CityRepository {
 
   City find(Long id);
 
-  City save(City paymentMethod);
+  City save(City city);
 
-  void remove(City paymentMethod);
+  void remove(Long id);
 }

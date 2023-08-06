@@ -4,6 +4,7 @@ import github.matheusferreiral.fdeliveryapi.domain.exception.EntityInUseExceptio
 import github.matheusferreiral.fdeliveryapi.domain.exception.EntityNotFoundException;
 import github.matheusferreiral.fdeliveryapi.domain.model.Kitchen;
 import github.matheusferreiral.fdeliveryapi.domain.repository.KitchenRepository;
+import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.dao.EmptyResultDataAccessException;
@@ -13,6 +14,14 @@ import org.springframework.stereotype.Service;
 public class KitchenService {
 
   @Autowired private KitchenRepository kitchenRepository;
+
+  public List<Kitchen> list() {
+    return kitchenRepository.list();
+  }
+
+  public Kitchen find(long kitchenId) {
+    return kitchenRepository.find(kitchenId);
+  }
 
   public Kitchen save(Kitchen kitchen) {
     return kitchenRepository.save(kitchen);

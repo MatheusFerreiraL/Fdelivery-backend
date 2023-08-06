@@ -8,7 +8,7 @@ public interface StateRepository {
 
   State find(Long id);
 
-  State save(State paymentMethod);
+  State save(State state);
 
-  void remove(State paymentMethod);
+  void remove(Long id);
 }

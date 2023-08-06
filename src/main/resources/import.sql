@@ -1,5 +1,5 @@
 INSERT INTO kitchen (name) VALUES ('Tailandesa');
-INSERT INTO kitchen(name) VALUES ('Indiana');
+INSERT INTO kitchen (name) VALUES ('Indiana');
 
 INSERT INTO restaurant (name, shipping_fee, kitchen_id) VALUES ('Thai Gourmet', 10, 1);
 INSERT INTO restaurant (name, shipping_fee, kitchen_id) VALUES ('Thai Delivery', 9.50, 1);
