@@ -2,12 +2,10 @@ package github.matheusferreiral.fdeliveryapi.domain.model;
 
 import jakarta.persistence.*;
 import java.math.BigDecimal;
+import lombok.Data;
 import lombok.EqualsAndHashCode;
-import lombok.Getter;
-import lombok.Setter;
 
-@Getter
-@Setter
+@Data
 @EqualsAndHashCode(onlyExplicitlyIncluded = true)
 @Entity
 public class Restaurant {
