@@ -30,6 +30,3 @@ build/
 
 ### VS Code ###
 .vscode/
-
-### Project ###
-src/main/java/github/matheusferreiral/fdeliveryapi/jpa

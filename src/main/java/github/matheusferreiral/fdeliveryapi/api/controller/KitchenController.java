@@ -3,8 +3,10 @@ package github.matheusferreiral.fdeliveryapi.api.controller;
 import github.matheusferreiral.fdeliveryapi.domain.exception.EntityInUseException;
 import github.matheusferreiral.fdeliveryapi.domain.exception.EntityNotFoundException;
 import github.matheusferreiral.fdeliveryapi.domain.model.Kitchen;
+import github.matheusferreiral.fdeliveryapi.domain.repository.KitchenRepository;
 import github.matheusferreiral.fdeliveryapi.domain.service.KitchenService;
 import java.util.List;
+import java.util.Optional;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -23,18 +25,20 @@ import org.springframework.web.bind.annotation.RestController;
 public class KitchenController {
 
   @Autowired private KitchenService kitchenService;
+  @Autowired private KitchenRepository kitchenRepository;
 
   @GetMapping("/list")
   public List<Kitchen> list() {
-    return kitchenService.list();
+    return kitchenRepository.findAll();
   }
 
   @GetMapping("/{kitchenId}")
   public ResponseEntity<Kitchen> find(@PathVariable("kitchenId") Long id) {
-    Kitchen kitchen = kitchenService.find(id);
+    Optional<Kitchen> kitchen = kitchenRepository.findById(id);
 
-    if (kitchen == null) return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
-    return ResponseEntity.status(HttpStatus.OK).body(kitchen);
+    return kitchen
+        .map(value -> ResponseEntity.status(HttpStatus.OK).body(value))
+        .orElseGet(() -> ResponseEntity.status(HttpStatus.NOT_FOUND).build());
   }
 
   @PostMapping("/register")
@@ -46,26 +50,26 @@ public class KitchenController {
   @PutMapping("/{kitchenId}")
   public ResponseEntity<Kitchen> update(
       @PathVariable Long kitchenId, @RequestBody Kitchen kitchen) {
-    Kitchen existingKitchen = kitchenService.find(kitchenId);
-    if (existingKitchen != null) {
-      BeanUtils.copyProperties(
-          kitchen, existingKitchen, "id"); // é o mesmo que dar um set em cada uma das propriedades
-      existingKitchen = kitchenService.save(existingKitchen);
-      return ResponseEntity.status(HttpStatus.OK).body(existingKitchen);
+
+    Optional<Kitchen> existingKitchen = kitchenRepository.findById(kitchenId);
+    if (existingKitchen.isPresent()) {
+      BeanUtils.copyProperties(kitchen, existingKitchen.get(), "id");
+      Kitchen savedKitchen = kitchenService.save(existingKitchen.get());
+      return ResponseEntity.status(HttpStatus.OK).body(savedKitchen);
     }
     return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
   }
 
-  @DeleteMapping("{kitchenId}")
-  public ResponseEntity<Kitchen> delete(@PathVariable Long kitchenId) {
+  @DeleteMapping("/{kitchenId}")
+  public ResponseEntity<?> delete(@PathVariable Long kitchenId) {
     try {
       kitchenService.remove(kitchenId);
       return ResponseEntity.status(HttpStatus.NO_CONTENT).build();
     } catch (EntityNotFoundException e) {
-      return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
+      return ResponseEntity.status(HttpStatus.NOT_FOUND).body(e.getMessage());
     } catch (EntityInUseException e) {
       // TODO: devolver corpo de resposta expecífica
-      return ResponseEntity.status(HttpStatus.CONFLICT).build();
+      return ResponseEntity.status(HttpStatus.CONFLICT).body(e.getMessage());
     }
   }
 }

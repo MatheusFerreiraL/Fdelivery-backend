@@ -7,6 +7,7 @@ import github.matheusferreiral.fdeliveryapi.domain.service.RestaurantService;
 import java.lang.reflect.Field;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -33,9 +34,9 @@ public class RestaurantController {
   }
 
   @GetMapping("/{restaurantId}")
-  public ResponseEntity<Restaurant> findRestaurant(@PathVariable long restaurantId) {
-    Restaurant existingRestaurant = restaurantService.find(restaurantId);
-    if (existingRestaurant != null)
+  public ResponseEntity<?> findRestaurant(@PathVariable long restaurantId) {
+    Optional<Restaurant> existingRestaurant = restaurantService.find(restaurantId);
+    if (existingRestaurant.isPresent())
       return ResponseEntity.status(HttpStatus.OK).body(existingRestaurant);
     return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
   }
@@ -54,11 +55,11 @@ public class RestaurantController {
   public ResponseEntity<?> updateRestaurant(
       @RequestBody Restaurant updatedRestaurant, @PathVariable long restaurantId) {
     try {
-      Restaurant existingRestaurant = restaurantService.find(restaurantId);
-      if (existingRestaurant != null) {
-        BeanUtils.copyProperties(updatedRestaurant, existingRestaurant, "id");
-        existingRestaurant = restaurantService.save(existingRestaurant);
-        return ResponseEntity.status(HttpStatus.OK).body(existingRestaurant);
+      Optional<Restaurant> existingRestaurant = restaurantService.find(restaurantId);
+      if (existingRestaurant.isPresent()) {
+        BeanUtils.copyProperties(updatedRestaurant, existingRestaurant.get(), "id");
+        Restaurant savedRestaurant = restaurantService.save(existingRestaurant.get());
+        return ResponseEntity.status(HttpStatus.OK).body(savedRestaurant);
       }
       return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
     } catch (EntityNotFoundException e) {
@@ -70,7 +71,7 @@ public class RestaurantController {
   public ResponseEntity<?> partialUpdate(
       @PathVariable("restaurantId") Long id, @RequestBody Map<String, Object> fields) {
 
-    Restaurant existingRestaurant = restaurantService.find(id);
+    Restaurant existingRestaurant = restaurantService.find(id).orElse(null);
 
     if (existingRestaurant == null) {
       return ResponseEntity.status(HttpStatus.NOT_FOUND).build();

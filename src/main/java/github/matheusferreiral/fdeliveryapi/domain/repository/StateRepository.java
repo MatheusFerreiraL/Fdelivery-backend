@@ -1,14 +1,6 @@
 package github.matheusferreiral.fdeliveryapi.domain.repository;
 
 import github.matheusferreiral.fdeliveryapi.domain.model.State;
-import java.util.List;
+import org.springframework.data.jpa.repository.JpaRepository;
 
-public interface StateRepository {
-  List<State> list();
-
-  State find(Long id);
-
-  State save(State state);
-
-  void remove(Long id);
-}
+public interface StateRepository extends JpaRepository<State, Long> {}

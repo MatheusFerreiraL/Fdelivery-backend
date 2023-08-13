@@ -5,9 +5,9 @@ import github.matheusferreiral.fdeliveryapi.domain.exception.EntityNotFoundExcep
 import github.matheusferreiral.fdeliveryapi.domain.model.State;
 import github.matheusferreiral.fdeliveryapi.domain.repository.StateRepository;
 import java.util.List;
+import java.util.Optional;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DataIntegrityViolationException;
-import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.stereotype.Service;
 
 @Service
@@ -15,19 +15,12 @@ public class StateService {
 
   @Autowired private StateRepository stateRepository;
 
-  /*
-   * list
-   * find
-   * save
-   * update
-   * remove
-   */
   public List<State> list() {
-    return stateRepository.list();
+    return stateRepository.findAll();
   }
 
-  public State find(Long stateId) {
-    return stateRepository.find(stateId);
+  public Optional<State> find(Long stateId) {
+    return stateRepository.findById(stateId);
   }
 
   public State save(State newState) {
@@ -36,10 +29,12 @@ public class StateService {
 
   public void remove(Long stateId) {
     try {
-      stateRepository.remove(stateId);
-    } catch (EmptyResultDataAccessException e) {
-      throw new EntityNotFoundException(
-          String.format("Não existe cadastro de estado com código %d", stateId));
+      Optional<State> existingState = this.find(stateId);
+      if (existingState.isEmpty()) {
+        throw new EntityNotFoundException(
+            String.format("Não existe cadastro de estado com código %d", stateId));
+      }
+      stateRepository.deleteById(stateId);
     } catch (DataIntegrityViolationException e) {
       throw new EntityInUseException(
           String.format("Estado de código %d não pode ser removido pois está em uso", stateId));

@@ -1,11 +1,6 @@
 package github.matheusferreiral.fdeliveryapi.domain.repository;
 
 import github.matheusferreiral.fdeliveryapi.domain.model.Restaurant;
-import java.util.List;
+import org.springframework.data.jpa.repository.JpaRepository;
 
-public interface RestaurantRepository {
-  List<Restaurant> list();
-  Restaurant find(Long id);
-  Restaurant save(Restaurant restaurant);
-  void remove(Restaurant restaurant);
-}
+public interface RestaurantRepository extends JpaRepository<Restaurant, Long> {}
